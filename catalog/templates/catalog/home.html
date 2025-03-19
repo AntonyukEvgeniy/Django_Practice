@@ -13,7 +13,7 @@
                     <li>{{ product.description|truncatechars:100 }}</li>
                     <li>Категория: {{ product.category.name }}</li>
                 </ul>
-                <a href="{% url 'product_detail' product.id %}" class="btn btn-lg btn-block btn-outline-primary">Подробнее</a>
+                <a href="{% url 'catalog:product_detail' product.id %}" class="btn btn-lg btn-block btn-outline-primary">Подробнее</a>
             </div>
         </div>
     </div>
