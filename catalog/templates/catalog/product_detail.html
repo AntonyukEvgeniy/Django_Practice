@@ -1,0 +1,19 @@
+{% extends 'base.html' %}
+{% block title %}{{ product.name }} - Skystore{% endblock %}
+{% block header %}{{ product.name }}{% endblock %}
+{% block content %}
+<div class="row">
+    <div class="col-lg-6">
+        {% if product.image %}
+            <img src="{{ product.image.url }}" class="img-fluid" alt="{{ product.name }}">
+        {% endif %}
+    </div>
+    <div class="col-lg-6">
+        <p class="lead">{{ product.description }}</p>
+        <p class="h3">Цена: {{ product.purchase_price }} руб.</p>
+        <p>Категория: {{ product.category.name }}</p>
+        <p>Дата создания: {{ product.created_at|date:"d.m.Y" }}</p>
+        <p>Последнее обновление: {{ product.updated_at|date:"d.m.Y" }}</p>
+    </div>
+</div>
+{% endblock %}
