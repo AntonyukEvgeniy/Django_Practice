@@ -7,7 +7,7 @@ def home(request):
     Контроллер для главной страницы
     """
     products = Product.objects.all()
-    return render(request, "catalog/home.html",{'products': products})
+    return render(request, "catalog/home.html", {"products": products})
 
 
 def contacts(request):
@@ -22,4 +22,4 @@ def product_detail(request, pk):
     Отображение детальной информации о продукте
     """
     product = get_object_or_404(Product, pk=pk)
-    return render(request, 'catalog/product_detail.html', {'product': product})
+    return render(request, "catalog/product_detail.html", {"product": product})
