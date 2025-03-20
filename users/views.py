@@ -1,4 +1,5 @@
 from django.contrib import messages
+from django.contrib.auth.views import LogoutView, LoginView
 from django.shortcuts import redirect
 from django.urls import reverse_lazy
 from django.views.generic import CreateView
@@ -9,10 +10,16 @@ from django.contrib.auth import login
 class RegisterView(CreateView):
     form_class = CustomUserCreationForm
     template_name = "users/register.html"
-    success_url = reverse_lazy("login")
+    success_url = reverse_lazy("users:login")
 
     def form_valid(self, form):
         user = form.save()
         login(self.request, user)
         messages.success(self.request, f"Пользователь {user} успешно зарегистрирован!")
         return redirect("catalog:home")
+
+class UserLoginView(LoginView):
+    next_page = reverse_lazy('catalog:home')
+
+class UserLogoutView(LogoutView):
+    next_page = reverse_lazy('catalog:home')  # URL для перенаправления после выхода из системы

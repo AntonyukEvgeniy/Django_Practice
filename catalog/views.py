@@ -1,4 +1,5 @@
 from django.contrib import messages
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.shortcuts import render, get_object_or_404
 from django.urls import reverse_lazy
 from django.views.generic import TemplateView, ListView, CreateView, UpdateView, DeleteView
@@ -8,6 +9,9 @@ from .models import Product
 
 
 class HomeView(ListView):
+    """
+    Главная страница
+    """
     model = Product
     template_name = 'catalog/home.html'
     context_object_name = 'products'
@@ -15,19 +19,19 @@ class HomeView(ListView):
 
 class ContactsView(TemplateView):
     """
-    Class-based view for displaying the contacts page
+    CBV, отображаем страницу контактов
     """
     template_name = 'catalog/contacts.html'
 
 
-class ProductDetailView(TemplateView):
+class ProductDetailView(LoginRequiredMixin,TemplateView):
     template_name = 'catalog/product_detail.html'
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['product'] = get_object_or_404(Product, pk=kwargs['pk'])
         return context
 
-class ProductCreateView(CreateView):
+class ProductCreateView(LoginRequiredMixin,CreateView):
     model = Product
     form_class = ProductForm
     template_name = 'catalog/product_form.html'
@@ -36,7 +40,7 @@ class ProductCreateView(CreateView):
         messages.success(self.request, 'Продукт успешно создан')
         return super().form_valid(form)
 
-class ProductUpdateView(UpdateView):
+class ProductUpdateView(LoginRequiredMixin,UpdateView):
     model = Product
     form_class = ProductForm
     template_name = 'catalog/product_form.html'
@@ -46,7 +50,7 @@ class ProductUpdateView(UpdateView):
         messages.success(self.request, 'Продукт успешно обновлен')
         return super().form_valid(form)
 
-class ProductDeleteView(DeleteView):
+class ProductDeleteView(LoginRequiredMixin,DeleteView):
     model = Product
     template_name = 'catalog/product_confirm_delete.html'
     success_url = reverse_lazy('catalog:home')

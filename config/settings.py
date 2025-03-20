@@ -152,3 +152,7 @@ MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 AUTH_USER_MODEL= 'users.CustomUser'
+LOGIN_URL = 'users:login'  # URL для перенаправления неавторизованных пользователей  # URL для перенаправления неавторизованных пользователей
+LOGOUT_REDIRECT_URL = 'catalog:home' #Редирект после разлогина
+LOGIN_REDIRECT_URL = 'catalog:home' #Редирект после логина
+
