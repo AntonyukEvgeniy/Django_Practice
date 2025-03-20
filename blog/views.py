@@ -1,3 +1,37 @@
-from django.shortcuts import render
+from django.urls import reverse_lazy
+from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
 
-# Create your views here.
+from blog.models import BlogPost
+
+
+class BlogPostListView(ListView):
+    model = BlogPost
+    template_name = 'blog/post_list.html'
+    context_object_name = 'posts'
+
+    def get_queryset(self):
+        return BlogPost.objects.filter(published=True).order_by('-created_at')
+
+class BlogPostDetailView(DetailView):
+    model = BlogPost
+    template_name = 'blog/blogpost_detail.html'
+    context_object_name = 'post'
+
+class BlogPostCreateView(CreateView):
+    model = BlogPost
+    template_name = 'blog/blogpost_form.html'
+    fields = ['title', 'content','preview', 'published']
+    success_url = reverse_lazy('blog:post_list')
+
+class BlogPostUpdateView(UpdateView):
+    model = BlogPost
+    template_name = 'blog/blogpost_form.html'
+    fields = ['title', 'content', 'published']
+
+    def get_success_url(self):
+        return reverse_lazy('blog:post_detail', kwargs={'pk': self.object.pk})
+
+class BlogPostDeleteView(DeleteView):
+    model = BlogPost
+    template_name = 'blog/blogpost_confirm_delete.html'
+    success_url = reverse_lazy('blog:post_list')

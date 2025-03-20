@@ -11,7 +11,8 @@ class BlogPost(models.Model):
         default=0, verbose_name="Количество просмотров"
     )
     class Meta:
-        verbose_name = "Публикация"
-        verbose_name_plural = "Публикации"
+        verbose_name = "Пост"
+        verbose_name_plural = "Посты"
+        ordering = ['-created_at']
     def __str__(self):
         return self.title
