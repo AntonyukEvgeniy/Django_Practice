@@ -47,6 +47,7 @@ INSTALLED_APPS = [
     "catalog",
     "blog",
     "users.apps.UsersConfig",
+    'widget_tweaks',
 ]
 
 MIDDLEWARE = [
