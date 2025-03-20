@@ -156,3 +156,10 @@ LOGIN_URL = 'users:login'  # URL для перенаправления неав�
 LOGOUT_REDIRECT_URL = 'catalog:home' #Редирект после разлогина
 LOGIN_REDIRECT_URL = 'catalog:home' #Редирект после логина
 
+# Email settings
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = env.str('EMAIL_HOST')  # Замените на ваш SMTP сервер
+EMAIL_PORT = env.int('EMAIL_PORT', default='587')
+EMAIL_USE_TLS = env.bool('EMAIL_USE_TLS')
+EMAIL_HOST_USER = env.str('EMAIL_HOST_USER')   # Замените на ваш email
+EMAIL_HOST_PASSWORD = env.str('EMAIL_HOST_PASSWORD')   # Замените на ваш пароль приложения
