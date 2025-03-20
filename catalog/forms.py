@@ -7,6 +7,14 @@ class ProductForm(forms.ModelForm):
         model = Product
         fields = ['name', 'description', 'image', 'category', 'purchase_price']
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        for field_name, field in self.fields.items():
+            field.widget.attrs['class'] = 'form-control'
+            field.widget.attrs['placeholder'] = field.label
+            if field_name == 'description':
+                field.widget.attrs['rows'] = 3
+
     def clean(self):
         cleaned_data = super().clean()
         forbidden_words = [
