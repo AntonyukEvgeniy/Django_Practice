@@ -5,14 +5,13 @@ class Category(models.Model):
     name = models.CharField(max_length=100, verbose_name="Наименование")
     description = models.TextField(verbose_name="Описание", blank=True, null=True)
 
-
     class Meta:
         verbose_name = "Категория"
         verbose_name_plural = "Категории"
 
-
     def __str__(self):
         return self.name
+
 
 class Product(models.Model):
     name = models.CharField(max_length=100, verbose_name="Наименование")
@@ -30,11 +29,10 @@ class Product(models.Model):
     updated_at = models.DateTimeField(
         auto_now=True, verbose_name="Дата последнего изменения"
     )
+
     class Meta:
         verbose_name = "Продукт"
         verbose_name_plural = "Продукты"
 
     def __str__(self):
         return self.name
-
-
