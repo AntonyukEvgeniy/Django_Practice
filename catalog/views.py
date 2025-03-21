@@ -25,14 +25,17 @@ class HomeView(ListView):
 
     def get_queryset(self):
         """Возвращает только опубликованные продукты"""
-        if self.request.user.groups.filter(name='Product Moderator').exists():
+        if self.request.user.groups.filter(name="Product Moderator").exists():
             return Product.objects.all()
         return Product.objects.filter(is_published=True)
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["is_moderator"] = self.request.user.groups.filter(name='Product Moderator').exists()
+        context["is_moderator"] = self.request.user.groups.filter(
+            name="Product Moderator"
+        ).exists()
         return context
+
 
 class ContactsView(TemplateView):
     """
@@ -48,7 +51,9 @@ class ProductDetailView(LoginRequiredMixin, TemplateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context["product"] = get_object_or_404(Product, pk=kwargs["pk"])
-        context["is_moderator"] = self.request.user.groups.filter(name='Product Moderator').exists()
+        context["is_moderator"] = self.request.user.groups.filter(
+            name="Product Moderator"
+        ).exists()
         return context
 
 
@@ -77,7 +82,8 @@ class ProductUpdateView(LoginRequiredMixin, UpdateView):
             if form.instance.is_published != self.get_object().is_published:
                 if not self.request.user.has_perm("catalog.can_unpublish_product"):
                     messages.error(
-                        self.request, "У вас нет прав на публикацию/снятие с публикации продукта"
+                        self.request,
+                        "У вас нет прав на публикацию/снятие с публикации продукта",
                     )
                     return self.form_invalid(form)
         messages.success(self.request, "Продукт успешно обновлен")
