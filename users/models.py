@@ -8,6 +8,7 @@ class CustomUser(AbstractUser):
     avatar = models.ImageField(upload_to="users/avatars/", blank=True, null=True)
     phone_number = models.CharField(max_length=15, blank=True)
     country = models.CharField(max_length=100, blank=True)
+    username = None
     USERNAME_FIELD = "email"
     REQUIRED_FIELDS = ["username"]
 
@@ -17,3 +18,6 @@ class CustomUser(AbstractUser):
 
     def __str__(self):
         return self.email
+
+
+

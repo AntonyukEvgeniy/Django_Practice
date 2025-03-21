@@ -1,13 +1,13 @@
+from smtplib import SMTPException
+
 from django.contrib import messages
-from django.contrib.auth.views import LogoutView, LoginView
-from django.core.mail import send_mail
+from django.contrib.auth import login
+from django.contrib.auth.views import LoginView, LogoutView
 from django.shortcuts import redirect
 from django.urls import reverse_lazy
 from django.views.generic import CreateView
-from environs import env
 
 from .forms import CustomUserCreationForm
-from django.contrib.auth import login
 
 
 class RegisterView(CreateView):
@@ -23,12 +23,10 @@ class RegisterView(CreateView):
         message = (
             f"Здравствуйте, {user.username}!\n\nСпасибо за регистрацию на нашем сайте."
         )
-        from_email = env.str("EMAIL_HOST_USER")  # Замените на ваш email
-        recipient_list = [user.email]
         try:
-            send_mail(subject, message, from_email, recipient_list, fail_silently=False)
-        except Exception as e:
-            raise e
+            user.email_user(subject, message)
+        except SMTPException as e:
+            messages.error(self.request, f"Ошибка отправки email: {str(e)}")
         messages.success(self.request, f"Пользователь {user} успешно зарегистрирован!")
         return redirect("catalog:home")
 
