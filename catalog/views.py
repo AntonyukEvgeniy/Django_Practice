@@ -109,7 +109,10 @@ class ProductDeleteView(LoginRequiredMixin, DeleteView):
         return base_qs.filter(owner=self.request.user)
 
     def delete(self, request, *args, **kwargs):
-        if not request.user.has_perm("catalog.delete_product") and not self.get_queryset().exists():
+        if (
+            not request.user.has_perm("catalog.delete_product")
+            and not self.get_queryset().exists()
+        ):
             messages.error(request, "У вас нет прав на удаление продукта")
             return redirect("catalog:product_detail", pk=kwargs["pk"])
         messages.success(request, "Продукт успешно удален")

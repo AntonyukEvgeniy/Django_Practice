@@ -17,9 +17,11 @@
         {% if is_moderator %}
             <p>Статус публикации: {% if product.is_published %}Опубликован{% else %}Не опубликован{% endif %}</p>
         {% endif %}
-        <a href="{% url 'catalog:product_update' product.pk %}" class="btn btn-primary">Редактировать</a>
-        {% if perms.catalog.delete_product %}
+        {% if user == product.owner or is_moderator %}
+            <a href="{% url 'catalog:product_update' product.pk %}" class="btn btn-primary">Редактировать</a>
+            {% if perms.catalog.delete_product or user == product.owner %}
             <a href="{% url 'catalog:product_delete' product.pk %}" class="btn btn-danger">Удалить</a>
+            {% endif %}
         {% endif %}
     </div>
 </div>

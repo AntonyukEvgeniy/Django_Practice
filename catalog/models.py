@@ -31,11 +31,12 @@ class Product(models.Model):
     )
     is_published = models.BooleanField(default=False, verbose_name="Опубликовано")
     owner = models.ForeignKey(
-        'users.CustomUser',
+        "users.CustomUser",
         on_delete=models.CASCADE,
         verbose_name="Владелец продукта",
-        related_name="products"
+        related_name="products",
     )
+
     class Meta:
         verbose_name = "Продукт"
         verbose_name_plural = "Продукты"
