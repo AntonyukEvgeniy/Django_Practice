@@ -64,6 +64,7 @@ class ProductCreateView(LoginRequiredMixin, CreateView):
     success_url = reverse_lazy("catalog:home")
 
     def form_valid(self, form):
+        form.instance.owner = self.request.user
         messages.success(self.request, "Продукт успешно создан")
         return super().form_valid(form)
 
@@ -72,6 +73,12 @@ class ProductUpdateView(LoginRequiredMixin, UpdateView):
     model = Product
     form_class = ProductForm
     template_name = "catalog/product_form.html"
+
+    def get_queryset(self):
+        base_qs = super().get_queryset()
+        if self.request.user.groups.filter(name="Product Moderator").exists():
+            return base_qs
+        return base_qs.filter(owner=self.request.user)
 
     def get_success_url(self):
         return reverse_lazy("catalog:product_detail", kwargs={"pk": self.object.pk})
@@ -95,8 +102,14 @@ class ProductDeleteView(LoginRequiredMixin, DeleteView):
     template_name = "catalog/product_confirm_delete.html"
     success_url = reverse_lazy("catalog:home")
 
+    def get_queryset(self):
+        base_qs = super().get_queryset()
+        if self.request.user.groups.filter(name="Product Moderator").exists():
+            return base_qs
+        return base_qs.filter(owner=self.request.user)
+
     def delete(self, request, *args, **kwargs):
-        if not request.user.has_perm("catalog.delete_product"):
+        if not request.user.has_perm("catalog.delete_product") and not self.get_queryset().exists():
             messages.error(request, "У вас нет прав на удаление продукта")
             return redirect("catalog:product_detail", pk=kwargs["pk"])
         messages.success(request, "Продукт успешно удален")
