@@ -1,4 +1,6 @@
 from django.db import models
+
+
 class BlogPost(models.Model):
     title = models.CharField(max_length=200, verbose_name="Заголовок")
     content = models.TextField(verbose_name="Содержание")
@@ -10,9 +12,11 @@ class BlogPost(models.Model):
     views_count = models.PositiveIntegerField(
         default=0, verbose_name="Количество просмотров"
     )
+
     class Meta:
         verbose_name = "Пост"
         verbose_name_plural = "Посты"
-        ordering = ['-created_at']
+        ordering = ["-created_at"]
+
     def __str__(self):
         return self.title
