@@ -2,6 +2,8 @@ from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse_lazy
+from django.utils.decorators import method_decorator
+from django.views.decorators.cache import cache_page
 from django.views.generic import (
     TemplateView,
     ListView,
@@ -11,7 +13,8 @@ from django.views.generic import (
 )
 
 from .forms import ProductForm
-from .models import Product
+from .models import Product, Category
+from .service import get_products_by_category
 
 
 class HomeView(ListView):
@@ -44,7 +47,7 @@ class ContactsView(TemplateView):
 
     template_name = "catalog/contacts.html"
 
-
+@method_decorator(cache_page(60 * 15), name='dispatch')  # Кэширование на 15 минут
 class ProductDetailView(LoginRequiredMixin, TemplateView):
     template_name = "catalog/product_detail.html"
 
@@ -117,3 +120,36 @@ class ProductDeleteView(LoginRequiredMixin, DeleteView):
             return redirect("catalog:product_detail", pk=kwargs["pk"])
         messages.success(request, "Продукт успешно удален")
         return super().delete(request, *args, **kwargs)
+
+
+class CategoryProductsView(ListView):
+    """
+    Отображение списка продуктов в выбранной категории
+    """
+    model = Product
+    template_name = "catalog/category_products.html"
+    context_object_name = "products"
+
+    def get_queryset(self):
+        category_id = self.kwargs.get('category_id')
+        if category_id:
+            return get_products_by_category(category_id, self.request.user)
+        return Product.objects.none()
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["categories"] = Category.objects.all()
+        context["current_category"] = self.kwargs.get('category_id')
+        return context
+
+class CategoryListView(ListView):
+    """
+    Отображение списка категорий
+    """
+    model = Category
+    template_name = "catalog/category_list.html"
+    context_object_name = "categories"
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["title"] = "Категории"
+        return context
