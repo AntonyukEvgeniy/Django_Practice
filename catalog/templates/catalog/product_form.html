@@ -17,6 +17,16 @@
                 {% endif %}
             </div>
             {% endfor %}
+            {% if perms.catalog.can_unpublish_product %}
+            <form method="post" class="d-inline" action="{% url 'catalog:product_update' product.pk %}">
+                {% csrf_token %}
+                <div class="form-check form-check-inline">
+                    <input type="checkbox" class="form-check-input" id="is_published" name="is_published"
+                           {% if product.is_published %}checked{% endif %} onchange="this.form.submit()">
+                    <label class="form-check-label" for="is_published">Опубликовано</label>
+                </div>
+            </form>
+            {% endif %}
             <button type="submit" class="btn btn-primary">Сохранить</button>
             <a href="{% url 'catalog:home' %}" class="btn btn-secondary">Отмена</a>
         </form>

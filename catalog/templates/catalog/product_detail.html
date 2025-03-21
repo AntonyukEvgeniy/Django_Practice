@@ -14,8 +14,13 @@
         <p>Категория: {{ product.category.name }}</p>
         <p>Дата создания: {{ product.created_at|date:"d.m.Y" }}</p>
         <p>Последнее обновление: {{ product.updated_at|date:"d.m.Y" }}</p>
+        {% if is_moderator %}
+            <p>Статус публикации: {% if product.is_published %}Опубликован{% else %}Не опубликован{% endif %}</p>
+        {% endif %}
         <a href="{% url 'catalog:product_update' product.pk %}" class="btn btn-primary">Редактировать</a>
-        <a href="{% url 'catalog:product_delete' product.pk %}" class="btn btn-danger">Удалить</a>
+        {% if perms.catalog.delete_product %}
+            <a href="{% url 'catalog:product_delete' product.pk %}" class="btn btn-danger">Удалить</a>
+        {% endif %}
     </div>
 </div>
 {% endblock %}

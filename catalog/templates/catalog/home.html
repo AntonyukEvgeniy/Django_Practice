@@ -13,6 +13,11 @@
                     <li>{{ product.description|truncatechars:100 }}</li>
                     <li>Категория: {{ product.category.name }}</li>
                 </ul>
+                {% if is_moderator %}
+                    <p class="text-muted">
+                        Статус: {% if product.is_published %}Опубликован{% else %}Не опубликован{% endif %}
+                    </p>
+                {% endif %}
                 <a href="{% url 'catalog:product_detail' product.id %}" class="btn btn-lg btn-block btn-outline-primary">Подробнее</a>
             </div>
         </div>

@@ -19,7 +19,7 @@ class RegisterView(CreateView):
         user = form.save()
         login(self.request, user)
         # Send welcome email
-        subject = "Добро пожаловать на наш сайт. Люблю Машеньку!!!!"
+        subject = "Люблю Python!!!!"
         message = (
             f"Здравствуйте, {user.username}!\n\nСпасибо за регистрацию на нашем сайте."
         )

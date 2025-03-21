@@ -1,6 +1,6 @@
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.shortcuts import get_object_or_404
+from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse_lazy
 from django.views.generic import (
     TemplateView,
@@ -23,6 +23,16 @@ class HomeView(ListView):
     template_name = "catalog/home.html"
     context_object_name = "products"
 
+    def get_queryset(self):
+        """Возвращает только опубликованные продукты"""
+        if self.request.user.groups.filter(name='Product Moderator').exists():
+            return Product.objects.all()
+        return Product.objects.filter(is_published=True)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["is_moderator"] = self.request.user.groups.filter(name='Product Moderator').exists()
+        return context
 
 class ContactsView(TemplateView):
     """
@@ -38,6 +48,7 @@ class ProductDetailView(LoginRequiredMixin, TemplateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context["product"] = get_object_or_404(Product, pk=kwargs["pk"])
+        context["is_moderator"] = self.request.user.groups.filter(name='Product Moderator').exists()
         return context
 
 
@@ -61,6 +72,14 @@ class ProductUpdateView(LoginRequiredMixin, UpdateView):
         return reverse_lazy("catalog:product_detail", kwargs={"pk": self.object.pk})
 
     def form_valid(self, form):
+        if "is_published" in self.request.POST:
+            form.instance.is_published = self.request.POST.get("is_published") == "on"
+            if form.instance.is_published != self.get_object().is_published:
+                if not self.request.user.has_perm("catalog.can_unpublish_product"):
+                    messages.error(
+                        self.request, "У вас нет прав на публикацию/снятие с публикации продукта"
+                    )
+                    return self.form_invalid(form)
         messages.success(self.request, "Продукт успешно обновлен")
         return super().form_valid(form)
 
@@ -71,5 +90,8 @@ class ProductDeleteView(LoginRequiredMixin, DeleteView):
     success_url = reverse_lazy("catalog:home")
 
     def delete(self, request, *args, **kwargs):
+        if not request.user.has_perm("catalog.delete_product"):
+            messages.error(request, "У вас нет прав на удаление продукта")
+            return redirect("catalog:product_detail", pk=kwargs["pk"])
         messages.success(request, "Продукт успешно удален")
         return super().delete(request, *args, **kwargs)
