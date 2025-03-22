@@ -1,0 +1,26 @@
+{% extends 'base.html' %}
+{% block title %}{{ title }} - Skystore{% endblock %}
+{% block header %}{{ title }}{% endblock %}
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <div class="list-group">
+            {% for category in categories %}
+            <a href="{% url 'catalog:category_products' category.id %}" 
+               class="list-group-item list-group-item-action">
+                <div class="d-flex w-100 justify-content-between">
+                    <h5 class="mb-1">{{ category.name }}</h5>
+                </div>
+                {% if category.description %}
+                <p class="mb-1">{{ category.description }}</p>
+                {% endif %}
+            </a>
+            {% empty %}
+            <div class="list-group-item">
+                <p class="mb-0">Нет доступных категорий</p>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endblock %}
