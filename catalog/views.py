@@ -1,5 +1,8 @@
+import json
+
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.core.cache import cache
 from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse_lazy
 from django.utils.decorators import method_decorator
@@ -28,9 +31,16 @@ class HomeView(ListView):
 
     def get_queryset(self):
         """Возвращает только опубликованные продукты"""
-        if self.request.user.groups.filter(name="Product Moderator").exists():
-            return Product.objects.all()
-        return Product.objects.filter(is_published=True)
+        cache_key = 'home_products'
+        queryset = cache.get(cache_key)
+        if not queryset:
+            if self.request.user.groups.filter(name="Product Moderator").exists():
+                queryset = list(Product.objects.all())
+            else:
+                queryset = list(Product.objects.filter(is_published=True))
+            cache.set(cache_key, queryset, timeout=60 * 15)  # Кэширование на 15 минут
+
+        return queryset
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
