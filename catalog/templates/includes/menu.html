@@ -11,7 +11,7 @@
     </nav>
     <div class="ms-3">
         {% if user.is_authenticated %}
-            <span class="me-3">{{ user.username }}</span>
+            <span class="me-3">{{ user.email }}</span>
             <form method="post" action="{% url 'users:logout' %}" class="d-inline">
                 {% csrf_token %}
                 <button type="submit" class="btn btn-outline-danger">Выйти</button>
