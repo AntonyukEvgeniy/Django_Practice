@@ -1,5 +1,3 @@
-import json
-
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.cache import cache
@@ -7,16 +5,11 @@ from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse_lazy
 from django.utils.decorators import method_decorator
 from django.views.decorators.cache import cache_page
-from django.views.generic import (
-    TemplateView,
-    ListView,
-    CreateView,
-    UpdateView,
-    DeleteView,
-)
+from django.views.generic import (CreateView, DeleteView, ListView,
+                                  TemplateView, UpdateView)
 
 from .forms import ProductForm
-from .models import Product, Category
+from .models import Category, Product
 from .service import get_products_by_category
 
 
@@ -31,7 +24,7 @@ class HomeView(ListView):
 
     def get_queryset(self):
         """Возвращает только опубликованные продукты"""
-        cache_key = 'home_products'
+        cache_key = "home_products"
         queryset = cache.get(cache_key)
         if not queryset:
             if self.request.user.groups.filter(name="Product Moderator").exists():
@@ -57,7 +50,8 @@ class ContactsView(TemplateView):
 
     template_name = "catalog/contacts.html"
 
-@method_decorator(cache_page(60 * 15), name='dispatch')  # Кэширование на 15 минут
+
+@method_decorator(cache_page(60 * 15), name="dispatch")  # Кэширование на 15 минут
 class ProductDetailView(LoginRequiredMixin, TemplateView):
     template_name = "catalog/product_detail.html"
 
@@ -136,12 +130,13 @@ class CategoryProductsView(ListView):
     """
     Отображение списка продуктов в выбранной категории
     """
+
     model = Product
     template_name = "catalog/category_products.html"
     context_object_name = "products"
 
     def get_queryset(self):
-        category_id = self.kwargs.get('category_id')
+        category_id = self.kwargs.get("category_id")
         if category_id:
             return get_products_by_category(category_id, self.request.user)
         return Product.objects.none()
@@ -149,16 +144,19 @@ class CategoryProductsView(ListView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context["categories"] = Category.objects.all()
-        context["current_category"] = self.kwargs.get('category_id')
+        context["current_category"] = self.kwargs.get("category_id")
         return context
+
 
 class CategoryListView(ListView):
     """
     Отображение списка категорий
     """
+
     model = Category
     template_name = "catalog/category_list.html"
     context_object_name = "categories"
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context["title"] = "Категории"
