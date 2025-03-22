@@ -45,6 +45,8 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     "catalog",
     "blog",
+    "users.apps.UsersConfig",
+    "widget_tweaks",
 ]
 
 MIDDLEWARE = [
@@ -147,3 +149,18 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 # Media files
 MEDIA_URL = "/media/"
 MEDIA_ROOT = os.path.join(BASE_DIR, "media")
+
+AUTH_USER_MODEL = "users.CustomUser"
+LOGIN_URL = "users:login"  # URL для перенаправления неавторизованных пользователей  # URL для перенаправления неавторизованных пользователей
+LOGOUT_REDIRECT_URL = "catalog:home"  # Редирект после разлогина
+LOGIN_REDIRECT_URL = "catalog:home"  # Редирект после логина
+
+# Email settings
+EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
+EMAIL_HOST = env.str("EMAIL_HOST")  # Замените на ваш SMTP сервер
+EMAIL_PORT = env.int("EMAIL_PORT", default="587")
+EMAIL_USE_TLS = env.bool("EMAIL_USE_TLS")
+EMAIL_HOST_USER = env.str("EMAIL_HOST_USER")  # Замените на ваш email
+EMAIL_HOST_PASSWORD = env.str(
+    "EMAIL_HOST_PASSWORD"
+)  # Замените на ваш пароль приложения

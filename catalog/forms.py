@@ -1,4 +1,5 @@
 from django import forms
+
 from .models import Product
 
 
@@ -43,7 +44,7 @@ class ProductForm(forms.ModelForm):
         return cleaned_data
 
     def clean_purchase_price(self):
-        price = self.cleaned_data['purchase_price']
+        price = self.cleaned_data.get("purchase_price")
         if price is not None and price < 0:
             raise forms.ValidationError("Цена не может быть отрицательной")
         return price
